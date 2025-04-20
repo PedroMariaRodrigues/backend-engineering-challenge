@@ -61,5 +61,5 @@ ipython_config.py
 .spam
 
 # Project specifics
-unbabel_cli*
+unbabel_cli.egg-info
 .pytest*

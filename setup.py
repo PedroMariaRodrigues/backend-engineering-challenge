@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name="unbabel-cli",
@@ -7,7 +7,7 @@ setup(
     author="Pedro Rodrigues",
     author_email="pedro.maria.rodrigues@tecnico.ulisboa.pt",
     py_modules=["unbabel_cli", "event", "process", "read", "write", "metrics_"],
-    packages=find_packages(),
+    package_dir={"": "src"}, 
     install_requires=[],  # Move the to requirements.txt
     entry_points={
         "console_scripts": [
