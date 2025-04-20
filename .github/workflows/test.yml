@@ -2,9 +2,10 @@ name: Python Tests with Coverage
 
 on:
   push:
-    branches: [ "*" ]
+      branches: [ "*" ]
   pull_request:
-    branches: [ "main" ]
+      branches:
+        - master
 
 jobs:
   test:
@@ -20,13 +21,8 @@ jobs:
         
     - name: Install dependencies
       run: |
-        make install-dependencies
+        make install-requirements
         
     - name: Run tests with coverage
       run: |
         make test
-
-    - name: Coverage Report
-      uses: romeovs/lcov-reporter-action@v0.2.16
-      with:
-        lcov-file: ./coverage/lcov.info
