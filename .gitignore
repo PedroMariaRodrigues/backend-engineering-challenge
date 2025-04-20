@@ -38,6 +38,7 @@ htmlcov/
 .nox/
 .coverage
 .coverage.*
+coverage/
 .cache
 nosetests.xml
 coverage.xml
@@ -63,5 +64,3 @@ ipython_config.py
 # Project specifics
 unbabel_cli.egg-info
 .pytest*
-coverage/
-.coverage
