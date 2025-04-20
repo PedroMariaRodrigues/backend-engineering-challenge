@@ -4,19 +4,17 @@ import time
 import json
 import argparse
     
-#gerar json random com a mesma estrutura
-#em tempos random para o events.json
-
-
-def generator(filename, max_delay):
+def event_generator(filename, max_delay):
+    '''
+    Generates random events and saves them to a file
+    '''
     
     while True:
     
         timer = random.randint(0, max_delay)
         duration = random.randint(1, 100)
         now = datetime.now()
-        result = {"timestamp": str(now),"translation_id": "5aa5b2f39f7254a77664","source_language": "en","target_language": "fr","client_name": "taxi-eats","event_name": "translation_delivered","nr_words": 120,"duration": duration}
-        #result = {"date": str(self.current_minute), "average_delivery_time": ma}
+        result = {"timestamp": str(now),"translation_id": "xxx","source_language": "xx","target_language": "xx","client_name": "xx","event_name": "translation_delivered","nr_words": 120,"duration": duration}
         with open(filename, 'a') as f_out:
             json.dump(result, f_out)
             f_out.write("\n")
@@ -36,4 +34,4 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    generator(args.output_file, args.max_delay)
+    event_generator(args.output_file, args.max_delay)
