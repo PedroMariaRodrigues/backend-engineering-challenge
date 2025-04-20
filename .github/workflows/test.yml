@@ -1,0 +1,32 @@
+name: Python Tests with Coverage
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        make install-dependencies
+        
+    - name: Run tests with coverage
+      run: |
+        make test
+
+    - name: Coverage Report
+      uses: romeovs/lcov-reporter-action@v0.2.16
+      with:
+        lcov-file: ./coverage/lcov.info

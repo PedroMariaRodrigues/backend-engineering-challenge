@@ -63,3 +63,5 @@ ipython_config.py
 # Project specifics
 unbabel_cli.egg-info
 .pytest*
+coverage/
+.coverage

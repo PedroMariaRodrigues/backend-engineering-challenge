@@ -9,9 +9,9 @@ install-requirements:
 
 # Run tests
 test: install-requirements
-	pytest -v
+	pytest --cov=src --cov-report=term-missing --cov-report=lcov:./coverage/lcov.info
 
 # Clean up
 clean:
-	rm -rf *.egg-info build/ dist/ __pycache__/ .pytest_cache/
-	rm -f output.json
+	rm -rf *.egg-info build/ dist/ __pycache__/ .pytest_cache/ coverage/
+	rm -f output.json .coverage
