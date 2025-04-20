@@ -34,7 +34,7 @@ def main():
    
     try:
     # First process all existing events
-        for event in reader.read_existing_events():  # New method to only read existing
+        for event in reader.read_existing_events():
             result = processor.process(event, args.metric)
 
             # Handle single result
@@ -46,15 +46,17 @@ def main():
                 for r in result:
                     writer.write(r)
 
-        # Process the final minute of existing events
-        final_result = processor.finalize(args.metric)
-        if final_result:
-            writer.write(final_result)
+        if not args.keep_live:
+            # Process the final minute of existing events, 
+            # if live wait for possible events in the same minute
+            final_result = processor.finalize(args.metric)
+            if final_result:
+                writer.write(final_result)
 
         # Now start monitoring for live events if requested
         if args.keep_live:
             print("Processing complete. Monitoring for new events...")
-            for event in reader.monitor_live_events():  # New method for live monitoring
+            for event in reader.monitor_live_events():
                 result = processor.process(event, args.metric)
                 if result:
                     if isinstance(result, dict):
@@ -64,6 +66,10 @@ def main():
                             writer.write(r)
 
     except KeyboardInterrupt:
+        #If keyboard interrupt is detected, calculate the last minute
+        final_result = processor.finalize(args.metric)
+        if final_result:
+            writer.write(final_result)
         print("Terminating Successfully")
         sys.exit(0)
        

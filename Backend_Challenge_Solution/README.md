@@ -1,21 +1,24 @@
-# Unababel Backend Engineering Challenge - Solution
+# Unbabel Backend Engineering Challenge - Solution
 
 This repository presents a simple command line application that parses a stream of events and produces an aggregated output. In this case, it was implemented a moving average metric. For every minute, it is calculated a moving average of the translation delivery time for the last X minutes.
 
 
-## Instalation
+## Installation
 
 Clone the repository
 
-    git clone https://github.com/PedroMariaRodrigues/backend-engineering-challenge.git
-
-    cd Backend_Challenge_Solution
+```shell
+git clone https://github.com/PedroMariaRodrigues/backend-engineering-challenge.git
+cd Backend_Challenge_Solution
+```
 
 Installation via setup.py
 
 To install the application from source
 
-    pip install .
+```shell
+pip install .
+```
 
 [For editors mode use `pip install -e .`, so you don't have to be continuously reinstalling.]
 
@@ -23,9 +26,9 @@ To install the application from source
 ## Usage
 
 Run the CLI tool on your event data:
-
-    unbabel_cli --input_file <INPUT_FILE> --window_size <WINDOW_SIZE> 
-
+```shell
+unbabel_cli --input_file <INPUT_FILE> --window_size <WINDOW_SIZE> 
+```
 ### Parameters
 
 - `--input_file`: Path to the Json file containing the events
@@ -38,11 +41,10 @@ Run the CLI tool on your event data:
 - `unbabel_cli.py`: Entry point to the application
 - `event.py`: Event data model
 - `metrics_.py`: Metric calculation implementations
-- `process.py`: Core processing logiv for events
+- `process.py`: Core processing logic for events
 - `read.py`: Input handling
 - `write.py`: Output Handling
 - `event_generator`(Bonus): Utility to generate test event data
-- `tests/`: Unit and integration tests
 - `example.json`: JSON file with example of events
 - `setup.py`: Configuration file for packaging the application. Defines dependencies and creates the command-line entry point.
 
@@ -74,29 +76,28 @@ Run the CLI tool on your event data:
 The project includes both unit and integration tests. 
 
 To run the tests create a new environment:
+```shell
+python -m venv .venv
+.venv/Scripts/Activate.ps1
+pip install -r requirements.txt
+pytest
+```    
 
-	python -m venv .venv
-
-	.venv/Scripts/Activate.ps1
-
-	pip install -r requirements.txt
-
-	pytest
-    
+docker run -it -v .:/code python:3.11-slim bash
     
 
 
 # Extra
 
-You can also generate test events (random timestamp and durantion) using the event generator:
+You can also generate test events (random timestamp and duration) using the event generator:
 
-
+```shell
     python event_generator.py --output_file events.json --max_delay 10
-
+```
 
 ## Parameters
 
-- `--output_file`: Path to the ouptut file (the input file used for unbabel_cli)
+- `--output_file`: Path to the output file (the input file used for unbabel_cli)
 - `--max_delay`: Maximum delay between random generated timestamp events
 
 

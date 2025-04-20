@@ -7,7 +7,7 @@ from unbabel_cli import main
 def test_main_integration(monkeypatch):
     mock_args = [
         "main.py",
-        "--input_file=test.jsonl",
+        "--input_file=example.json",
         "--window_size=10",
         "--metric=moving_average",
         "--output=cli"
@@ -43,7 +43,7 @@ def test_main_writes_to_file(monkeypatch, tmp_path):
     output_file = tmp_path / "output.json"
     mock_args = [
         "unbabel_cli.py",
-        "--input_file=test.jsonl",
+        "--input_file=example.json",
         "--window_size=5",
         "--metric=moving_average",
         f"--output={output_file}"
@@ -80,7 +80,7 @@ def test_main_writes_to_file(monkeypatch, tmp_path):
 def test_main_invalid_metric(monkeypatch): 
     mock_args = [
         "unbabel_cli.py",
-        "--input_file=test.jsonl",
+        "--input_file=example.json",
         "--window_size=5",
         "--metric=invalid_metric",  # Invalid metric
         "--output=cli"

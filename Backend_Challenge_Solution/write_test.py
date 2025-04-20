@@ -14,7 +14,7 @@ from write import Writer
         ),
         # File branch: write single result, then read back
         (
-            "events_out.jsonl",
+            "events_out.json",
             {"a": 10, "b": 20},
             json.dumps({"a": 10, "b": 20}) + "\n",
             False
@@ -65,7 +65,7 @@ def test_writer_append_behavior(tmp_path, initial_content, new_result, expected_
     """
     Verify that write() appends to an existing file rather than overwriting.
     """
-    file_path = tmp_path / "append_test.jsonl"
+    file_path = tmp_path / "append_test.json"
     file_path.write_text(initial_content)
 
     writer = Writer(str(file_path))

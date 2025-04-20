@@ -1,17 +1,15 @@
-import pandas as pd
+from pydantic import BaseModel, Field
+from datetime import datetime
 
-class Event:
-    '''
-    Event class to represent an event    
-    '''
-    def __init__(self, timestamp, translation_id, source_language, target_language, client_name, event_name, nr_words, duration):
-        self.timestamp = pd.to_datetime(timestamp)
-        self.translation_id = translation_id
-        self.source_language = source_language
-        self.target_language = target_language
-        self.client_name = client_name
-        self.event_name = event_name
-        self.nr_words = nr_words
-        self.duration = duration
-    
-    
+class Event(BaseModel):
+    """
+    Event class to represent an event using Pydantic
+    """
+    timestamp: datetime
+    translation_id: str
+    source_language: str
+    target_language: str
+    client_name: str
+    event_name: str
+    nr_words: int
+    duration: float = Field(ge=0)  

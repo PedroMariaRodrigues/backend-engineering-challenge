@@ -1,7 +1,7 @@
 import json
 import pytest
 from read import Reader
-import pandas as pd
+from datetime import datetime
 
 @pytest.mark.parametrize(
     "line, expected_exception, expected_attrs",
@@ -20,7 +20,7 @@ import pandas as pd
             }),
             None,
             {
-                "timestamp": pd.to_datetime("2018-12-26 18:23:19.903159"),
+                "timestamp": datetime(2018, 12, 26, 18, 23, 19, 903159),
                 "translation_id": "abc123",
                 "source_language": "en",
                 "target_language": "pt",
@@ -47,6 +47,11 @@ import pandas as pd
             ValueError,
             None
         ),
+    ], 
+    ids=[
+        "valid_event",
+        "invalid_json",
+        "missing_key"
     ]
 )
 def test_parse_event(line, expected_exception, expected_attrs):

@@ -2,7 +2,7 @@ import pytest
 from types import SimpleNamespace
 from metrics_ import metrics
 
-@ pytest.mark.parametrize(
+@pytest.mark.parametrize(
     "events, expected_ma",
     [
         # Empty list -> average 0

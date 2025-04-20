@@ -6,6 +6,9 @@ from datetime import datetime
 from event import Event
 
 class Reader:
+    '''
+    Class to read the events from the file
+    '''
     
     def __init__(self, filename: str, keep_reading_live: bool):
         self.filename = filename  
@@ -20,7 +23,6 @@ class Reader:
         '''
         # Parse JSON line
         try:
-             # Parse line with JSON data
             event_data = json.loads(line)
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON format: {e}")
@@ -40,41 +42,12 @@ class Reader:
         
             return event
         except KeyError as e:
-            raise ValueError(f"Missing key in JSON data: {e}")
-
-    
-    # def read_events(self):
-    #     """
-    #     Read events from file, yielding one event at a time
-    #     Stops at EOF unless keep_reading_live is True
-    #     """
-    #     pointer = 0
-
-    #     while True:  
-              
-    #         with open(self.filename, 'r') as file:
-                    
-    #             #Jump to the last read postition
-    #             file.seek(pointer)
-    #             line = file.readline()
-
-    #             if not line:
-    #                 #EOF reached
-    #                 if self.keep_reading_live is True:
-    #                     time.sleep(1)
-    #                     continue
-    #                 else:
-    #                     #print('Finished analysing the file.')
-    #                     return
-
-    #             pointer = file.tell()
-    #             event = self.parse_event(line)
-
-    #             yield event
-                
+            raise ValueError(f"Missing key in JSON data: {e}")                
     
     def read_existing_events(self):
-        """Read only events that already exist in the file."""
+        """
+        Read only events that already exist in the file.
+        """
         try:
             with open(self.filepath, 'r') as f:
                 for line in f:
@@ -99,43 +72,42 @@ class Reader:
             sys.exit(1)
     
     def monitor_live_events(self):
-        """Monitor the file for new events after reading existing ones."""
+        """
+        Monitor the file for new events after reading existing ones.
+        """
         if not self.keep_reading_live:
             return
-            
-        try:
-            self.file = open(self.filepath, 'r')
-            # Move to the last read position
-            self.file.seek(self.last_position)
-            
-            while True:
-                line = self.file.readline()
-                if line:
-                    line = line.strip()
-                    if not line:  # Skip empty lines
-                        continue
-                        
-                    try:
-                        event = self.parse_event(line)
-                        # Update the position for next read
-                        self.last_position = self.file.tell()
-                        yield event
-                    except json.JSONDecodeError:
-                        print(f"Error decoding JSON: {line}")
-                    except KeyError as e:
-                        print(f"Missing required key in event: {e}")
-                else:
-                    # No new line, wait before trying again
-                    time.sleep(0.1)  # Add small delay to reduce CPU usage
-                    
-        except FileNotFoundError:
-            print(f"File not found: {self.filepath}")
-            sys.exit(1)
-        finally:
-            if self.file:
-                self.file.close()
 
-# reader = Reader('test.json', keep_reading_live=False)
-# for i, event in enumerate(reader.read_events()):
-    
-#     print(i, event.timestamp, event.duration)
+        try:
+            while True:
+                try:
+                    with open(self.filepath, 'r') as file:
+                        file.seek(self.last_position)
+
+                        line = file.readline()
+                        if line:
+                            line = line.strip()
+                            if not line:  # Skip empty lines
+                                continue
+
+                            try:
+                                event = self.parse_event(line)
+                                # Update position before yielding
+                                self.last_position = file.tell()
+                                yield event
+                            except json.JSONDecodeError:
+                                print(f"Error decoding JSON: {line}")
+                                self.last_position = file.tell()  # Skip bad JSON
+                            except KeyError as e:
+                                print(f"Missing required key in event: {e}")
+                                self.last_position = file.tell()  # Skip bad event
+                        else:
+                            # No new line, pause before retrying
+                            time.sleep(0.5)
+                except FileNotFoundError:
+                    print(f"File not found: {self.filepath}")
+                    time.sleep(1)  # Wait and retry if file monitoring
+
+        except Exception as e:
+            print(f"Error monitoring file: {e}")
+            sys.exit(1)
