@@ -2,6 +2,7 @@ import json
 import sys
 import os
 import time
+from typing import Generator
 from event import Event
 
 class Reader:
@@ -9,14 +10,12 @@ class Reader:
     Class to read the events from the file
     '''
     
-    def __init__(self, filename: str, keep_reading_live: bool):
+    def __init__(self, filename: str, keep_reading_live: bool) -> None:
         self.filename = filename  
         self.keep_reading_live = keep_reading_live  
-        self.filepath = filename
-        self.last_position = 0
-        self.file = None  
+        self.last_position = 0  
          
-    def parse_event(self, line: str):
+    def parse_event(self, line: str) -> Event:
         '''
         Parse the event from the line
         '''
@@ -43,12 +42,12 @@ class Reader:
         except KeyError as e:
             raise ValueError(f"Missing key in JSON data: {e}")                
     
-    def read_existing_events(self):
+    def read_existing_events(self) -> Generator[Event, None, None]:
         """
         Read only events that already exist in the file.
         """
         try:
-            with open(self.filepath, 'r') as f:
+            with open(self.filename, 'r') as f:
                 for line in f:
                     line = line.strip()
                     if not line:  # Skip empty lines
@@ -64,13 +63,13 @@ class Reader:
             
             # Store the current file position for live monitoring
             if self.keep_reading_live:
-                self.last_position = os.path.getsize(self.filepath)
+                self.last_position = os.path.getsize(self.filename)
         
         except FileNotFoundError:
-            print(f"File not found: {self.filepath}")
+            print(f"File not found: {self.filename}")
             sys.exit(1)
     
-    def monitor_live_events(self):
+    def monitor_live_events(self) -> Generator[Event, None, None]:
         """
         Monitor the file for new events after reading existing ones.
         """
@@ -80,7 +79,7 @@ class Reader:
         try:
             while True:
                 try:
-                    with open(self.filepath, 'r') as file:
+                    with open(self.filename, 'r') as file:
                         file.seek(self.last_position)
 
                         line = file.readline()
@@ -104,7 +103,7 @@ class Reader:
                             # No new line, pause before retrying
                             time.sleep(0.5)
                 except FileNotFoundError:
-                    print(f"File not found: {self.filepath}")
+                    print(f"File not found: {self.filename}")
                     time.sleep(1)  # Wait and retry if file monitoring
 
         except Exception as e:
