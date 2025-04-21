@@ -47,5 +47,5 @@ class Maximum(Metrics):
         for event in events:
             delivery_time.append(event.duration)
         
-        max = max(delivery_time)
-        return max
+        max_value = max(delivery_time)
+        return max_value
