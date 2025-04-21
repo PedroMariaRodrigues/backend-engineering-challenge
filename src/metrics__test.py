@@ -1,6 +1,6 @@
 import pytest
 from types import SimpleNamespace
-from metrics_ import metrics
+from metrics_ import Metrics
 
 @pytest.mark.parametrize(
     "events, expected_ma",
