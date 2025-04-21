@@ -108,9 +108,8 @@ def test_parse_event(line, expected_exception, expected_attrs):
         # 2. Empty file: expect 0 yields
         ([], 0),
     ],
-    ids=["valid 1",
-         "valid 2",
-         "valid 3"
+    ids=["valid_3_events",
+         "empty_file_no_events"
          ]
 )
 def test_read_existing_events(tmp_path, lines, expected_count):
