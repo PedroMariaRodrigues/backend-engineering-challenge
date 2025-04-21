@@ -1,6 +1,6 @@
 import pytest
 from types import SimpleNamespace
-from metrics_ import Metrics
+from metrics_ import Metrics, MovingAverage, Maximum
 
 @pytest.mark.parametrize(
     "events, expected_ma",
@@ -21,5 +21,5 @@ def test_moving_average(events, expected_ma):
     """
     Test metrics.moving_average with various lists of events.
     """
-    result = Metrics.moving_average(events)
+    result = MovingAverage.compute(events)
     assert result == expected_ma
