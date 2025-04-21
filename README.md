@@ -79,7 +79,7 @@ unbabel_cli --input_file example.json --window_size 10 --keep_live
 - [`read.py`](src/read.py): Input handling and file monitoring
 - [`write.py`](src/write.py): Output handling (file or CLI)
 - [`example.json`](example.json): JSON file with example events
-- [`setup.py`](src/setup.py): Configuration file for packaging the application
+- [`setup.py`](setup.py): Configuration file for packaging the application
 - `*_test.py`: Test files for each module
 
 # Event Format
