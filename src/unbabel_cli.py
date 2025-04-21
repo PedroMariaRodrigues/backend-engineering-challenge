@@ -3,7 +3,8 @@ import sys
 import os
 from read import Reader
 from process import Processor
-from write import Writer       
+from write import Writer      
+from metrics_ import available_metrics 
 
 def main():
     '''
@@ -16,7 +17,7 @@ def main():
                         help="Input file to process")
     parser.add_argument("--window_size", type=int, required=True, 
                         help='Window size to process data in minutes')
-    parser.add_argument("--metric", type=str, default="moving_average", choices=["moving_average", "maximum"], 
+    parser.add_argument("--metric", type=str, default="moving_average", choices=list(available_metrics.keys()), 
                         help="""Available metrics:\n
                         - moving_average(default) -> Moving average of the last x minutes\n
                         - maximum -> Maximum of the last x minutes""")
