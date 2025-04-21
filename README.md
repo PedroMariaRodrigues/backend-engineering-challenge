@@ -111,9 +111,7 @@ unbabel_cli --input_file example.json --window_size 10 --keep_live
 # Assumptions
 
 - Events are ordered by timestamp
-- All input files are valid JSON with the expected schema
 - Time window is specified in minutes
-- Output is generated for each minute boundary
 
 # Testing
 
