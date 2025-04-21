@@ -1,6 +1,6 @@
 # Unbabel Backend Engineering Challenge - Solution
 
-This repository presents a simple command line application that parses a stream of events and produces an aggregated output. In this case, it was implemented a moving average metric. For every minute, it is calculated a moving average of the translation delivery time for the last X minutes.
+This repository presents a simple command line application that parses a stream of events and produces an aggregated output. It calculates metrics (moving average or maximum) of translation delivery times for the last X minutes, updated every minute.
 
 
 ## Installation
@@ -9,7 +9,8 @@ Clone the repository
 
 ```shell
 git clone https://github.com/PedroMariaRodrigues/backend-engineering-challenge.git
-cd Backend_Challenge_Solution
+
+cd backend-engineering-challenge
 ```
 
 Installation via setup.py
@@ -20,34 +21,64 @@ To install the application from source
 pip install .
 ```
 
-[For editors mode use `pip install -e .`, so you don't have to be continuously reinstalling.]
+For development mode (changes to code take effect without reinstallation):
 
+```shell
+pip install -e .
+```
+
+## Docker Installation
+
+```shell
+docker run -it -v .:/code python:3.11 bash
+cd code
+make
+```
 
 ## Usage
 
 Run the CLI tool on your event data:
 ```shell
-unbabel_cli --input_file <INPUT_FILE> --window_size <WINDOW_SIZE> 
+unbabel_cli --input_file <INPUT_FILE> --window_size <WINDOW_SIZE> [OPTIONS]
 ```
 ### Parameters
 
-- `--input_file`: Path to the Json file containing the events
+- `--input_file`: Path to the JSON file containing the events
 - `--window_size`: Size of the moving window in minutes
-- `--metric`(Optional): Choose the metric to analyse the data 
-- `--output`(Optional): Path to the output file (defaults to "output.json"), can also output to cli
-- `--keep_live`(Optional): After reading all the input file, keeps reading the file in case of live update
+- `--metric`(Optional): Choose the metric to analyze the data 
+	- `moving_average`(default): Calculate moving average of delivery times
+	- `maximum`: Calculate maximum delivery time
+- `--output`(Optional): Path to the output file (defaults to "output.json"), or can use "cli" to print in terminal
+- `--keep_live`(Optional): After reading all the input file, keeps reading the file for new events
+
+
+### Example Commands
+
+Basic usage with moving average:
+
+```python
+unbabel_cli --input_file example.json --window_size 10
+```
+
+Use maximum metric and outputting to console:
+```python
+unbabel_cli --input_file example.json --window_size 5 --metric maximum --output cli
+```
+
+Monitor live file updates:
+```python
+unbabel_cli --input_file example.json --window_size 10 --keep_live
+```
 
 # Project Structure
 - `unbabel_cli.py`: Entry point to the application
-- `event.py`: Event data model
+- `event.py`: Event data model and result formatting
 - `metrics_.py`: Metric calculation implementations
 - `process.py`: Core processing logic for events
-- `read.py`: Input handling
-- `write.py`: Output Handling
-- `event_generator`(Bonus): Utility to generate test event data
+- `read.py`: Input handling and file monitoring
+- `write.py`: Output Handling(file or CLI)
 - `example.json`: JSON file with example of events
-- `setup.py`: Configuration file for packaging the application. Defines dependencies and creates the command-line entry point.
-
+- `setup.py`: Configuration file for packaging the application. 
 
 # Event Format
 
@@ -64,40 +95,133 @@ unbabel_cli --input_file <INPUT_FILE> --window_size <WINDOW_SIZE>
 }
 ```
 
+## Output Format
+### For Moving Average:
+```json
+{"date": "2018-12-26 18:12:00", "average_delivery_time": 15.5}
+``` 
+
+### For Maximum:
+```json
+{"date": "2018-12-26 18:12:00", "max_delivery_time": 35}
+```
+
 # Assumptions
 
 - Events are ordered by timestamp
-- Events have the correct format
-- No white lines between events
-
+- All input files are valid JSON with the expected schema
+- Time window is specified in minutes
+- Output is generated for each minute boundary
 
 # Testing
 
-The project includes both unit and integration tests. 
+The project includes comprehensive unit and integration tests with high code coverage.
 
-To run the tests create a new environment:
+## Running tests
+
+Using pytest directly:
+
 ```shell
 python -m venv .venv
-.venv/Scripts/Activate.ps1
+.venv/Scripts/Activate.ps1 #On Windows
+source .venv/bin/activate  #On Linux/Mac 
 pip install -r requirements.txt
 pytest
 ```    
 
-docker run -it -v .:/code python:3.11-slim bash
-    
+
+## In Docker:
 
 
-# Extra
-
-You can also generate test events (random timestamp and duration) using the event generator:
-
+Using Make:
 ```shell
-    python event_generator.py --output_file events.json --max_delay 10
+docker run -it -v .:/code python:3.11 bash
+cd code
+make test
 ```
 
-## Parameters
+For tests with coverage report:
+```shell
+make test-coverage
+```
+
+
+# Error Handling Examples
+The application handles various error cases:
+
+1. Missing or Invalid input file
+```shell
+FileNotFoundError: The file 'nonexistent_file.json' does not exist.
+```
+2. Invalid Window Size:
+```shell
+ValueError: The window size must be a positive integer.
+```
+
+3. Invalid metric name:
+```shell
+SystemExit: 2  # with argparse error message
+```
+
+4. Malformed JSON in input file:
+```shell
+Error decoding JSON: {bad json}
+```
+
+5. Missing required fields in event:
+```shell
+Error decoding JSON: { "timestamp": "2025-04-20T12:00:00Z", "duration": }
+```
+
+# CI Workflow
+The project uses GitHub Actions for continuous integration. The workflow in (.github\workflows\test.yml) automatically:
+
+1. Sets up Python 3.11
+2. Installs dependencies using `make install-requirements`
+3. Runs tests with coverage using `make test-coverage`
+4. Generates coverage reports
+
+The workflow is triggered on:
+
+ - All pushes to any branch
+ - Pull requests to the master branch
+
+# Test Coverage
+The project has comprehensive test coverage as demonstrated by the coverage reports. To view the coverage report:
+
+```shell
+make test-coverage
+```
+
+This generates:
+
+- Terminal report with line-by-line coverage metrics
+- LCOV report at lcov.info for integration with tools like Codecov
+
+Current code coverage is close to 100% across all modules, ensuring reliability and stability.
+
+
+# Extra Features
+
+## Additional Metrics
+The framework is designed to be extensible with different metrics. Currently implemented:
+
+- `moving_average`: Calculates average delivery time over the window period
+- `maximum`: Finds maximum delivery time in the window period
+
+## Live File Monitoring
+
+With the `--keep_live` option, the application can monitor a file for new events in real-time, which is useful for ongoing data streams.
+
+## Event Generator
+
+It's possible to generate test events (random timestamp and duration) using the event generator:
+
+```shell
+python event_generator.py --output_file events.json --max_delay 10
+```
+
+### Parameters
 
 - `--output_file`: Path to the output file (the input file used for unbabel_cli)
 - `--max_delay`: Maximum delay between random generated timestamp events
-
-
