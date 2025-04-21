@@ -13,7 +13,7 @@ git clone https://github.com/PedroMariaRodrigues/backend-engineering-challenge.g
 cd backend-engineering-challenge
 ```
 
-Installation via [`setup.py`](setup.py)
+### Installation via [`setup.py`](setup.py)
 
 To install the application from source
 
