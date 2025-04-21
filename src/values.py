@@ -19,10 +19,16 @@ class EventResult(BaseModel):
     EventResult class to represent the result aggregated events
     """
     date: datetime
-    average_delivery_time: float = Field(ge=0)
+    delivery_time_op: float = Field(ge=0)
 
-    def format(self) -> str:
+    def format_moving_average(self) -> str:
         """
-        Format the event to a string
+        Format the event result moving average to a string
         """
-        return {"date": str(self.date), "average_delivery_time": self.average_delivery_time}
+        return {"date": str(self.date), "average_delivery_time": self.delivery_time_op}
+    
+    def format_maximum(self) -> str:
+        """
+        Format the event result maximum to a string
+        """
+        return {"date": str(self.date), "maximum": self.delivery_time_op}
