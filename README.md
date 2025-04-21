@@ -79,6 +79,7 @@ unbabel_cli --input_file example.json --window_size 10 --keep_live
 - `write.py`: Output Handling(file or CLI)
 - `example.json`: JSON file with example of events
 - `setup.py`: Configuration file for packaging the application. 
+- `*_test.py`: Test files for each module
 
 # Event Format
 
