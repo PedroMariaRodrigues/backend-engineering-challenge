@@ -33,10 +33,8 @@ class Processor:
         
     def get_metrics(self, metric: str) -> Metrics:
         """Select the metric to be used"""
-        if metric == "moving_average":
-            return MovingAverage()
-        elif metric == "maximum":
-            return Maximum()
+        if metric in self.supported_metrics:
+            return available_metrics[metric]()
         else:
             raise ValueError("Unsupported metric")
         
