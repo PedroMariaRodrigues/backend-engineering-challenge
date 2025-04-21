@@ -8,7 +8,8 @@ install-requirements:
 	pip install -r requirements.txt
 
 # Run tests
-test: install-requirements test-coverage
+test: install-requirements
+	pytest
 
 test-coverage:
 	pytest --cov=src --cov-report=term-missing --cov-report=lcov:./coverage/lcov.info
