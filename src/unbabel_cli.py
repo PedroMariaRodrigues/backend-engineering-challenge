@@ -1,5 +1,6 @@
 import argparse
 import sys
+import os
 from read import Reader
 from process import Processor
 from write import Writer       
@@ -21,22 +22,30 @@ def main():
                         - maximum -> Maximum of the last x minutes""")
     parser.add_argument("--output", type=str, default="output.json",
                         help = """The results can be outputed to:
-                        -file (default) -> Add the destiny desired file and format, example: output.txt, output.json (Accept txt and json formats only)
+                        -file (default) -> Add the destiny desired file and format
                         -cli  -> Output the results to the terminal""")
     parser.add_argument("--keep_live", action='store_true', 
                         help= "After analyze the all input file, keep waiting to read live")
      
     args = parser.parse_args() 
-     
     
+    #Validate input file
+    if not os.path.isfile(args.input_file):
+        raise FileNotFoundError(f"The file '{args.input_file}' does not exist.")
+
+    #Validate window size
+    if args.window_size <= 0:
+        raise ValueError("The window size must be a positive integer.")
+
+            
     reader = Reader(args.input_file, args.keep_live)
-    processor = Processor(args.window_size)
+    processor = Processor(args.window_size, args.metric)
     writer = Writer(args.output)
    
     try:
     # First process all existing events
         for event in reader.read_existing_events():
-            result = processor.process(event, args.metric)
+            result = processor.process(event)
 
             # Handle single result
             if result and isinstance(result, dict):
@@ -50,7 +59,7 @@ def main():
         if not args.keep_live:
             # Process the final minute of existing events, 
             # if live wait for possible events in the same minute
-            final_result = processor.finalize(args.metric)
+            final_result = processor.finalize()
             if final_result:
                 writer.write(final_result)
 
@@ -58,7 +67,7 @@ def main():
         if args.keep_live:
             print("Processing complete. Monitoring for new events...")
             for event in reader.monitor_live_events():
-                result = processor.process(event, args.metric)
+                result = processor.process(event)
                 if result:
                     if isinstance(result, dict):
                         writer.write(result)
@@ -68,7 +77,7 @@ def main():
 
     except KeyboardInterrupt:
         #If keyboard interrupt is detected, calculate the last minute
-        final_result = processor.finalize(args.metric)
+        final_result = processor.finalize()
         if final_result:
             writer.write(final_result)
         print("Terminating Successfully")
