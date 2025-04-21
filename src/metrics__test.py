@@ -1,6 +1,6 @@
 import pytest
 from types import SimpleNamespace
-from metrics_ import MovingAverage, Maximum
+from metrics_ import Metrics, MovingAverage, Maximum
 
 @pytest.mark.parametrize(
     "events, expected_ma",
@@ -62,3 +62,15 @@ def test_maximum(events, expected_max):
     max_metric = Maximum() 
     result = max_metric.compute(events)
     assert result == expected_max
+
+
+def test_metrics_base_class():
+    """
+    Test that the base Metrics class has a compute method
+    that raises NotImplementedError when called directly.
+    """
+    metrics = Metrics()
+    
+    # The base class compute method should raise NotImplementedError when called directly
+    with pytest.raises(NotImplementedError, match="Subclasses must implement compute method"):
+        metrics.compute()

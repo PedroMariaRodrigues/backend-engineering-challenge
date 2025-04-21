@@ -2,8 +2,11 @@ class Metrics:
     '''
     Class with the available metrics
     '''
-    def compute() -> int:
-        pass
+    def compute(self) -> int:
+        """
+        Base compute method that should be overridden by subclasses.
+        """
+        raise NotImplementedError("Subclasses must implement compute method")
     
 
 class MovingAverage(Metrics):
