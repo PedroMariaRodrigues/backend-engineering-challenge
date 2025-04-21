@@ -1,4 +1,4 @@
-from metrics_ import Metrics
+from metrics_ import Metrics, MovingAverage, Maximum
 from datetime import datetime, timedelta
 from typing import Dict, List, Union, Optional, Any, Deque
 from collections import deque
@@ -17,10 +17,18 @@ class Processor:
     Class to process the metrics with data and time window
     '''
     
-    def __init__(self, window_size: int) -> None:
+    def __init__(self, window_size: int, metric:str = "moving_average") -> None:
         self.window_size: int = window_size
         self.moving_window: Deque[Event] = deque()
         self.event_current_minute: Optional[datetime] = None
+        self.metric: Metrics = self.get_metrics(metric)
+        
+    def get_metrics(self, metric: str) -> Metrics:
+        if metric == "moving_average":
+            return MovingAverage()
+        elif metric == "maximum":
+            return Maximum()
+        
         
     def popleft_moving_window(self, current_minute: datetime) -> None:
         '''
@@ -34,16 +42,11 @@ class Processor:
         '''
         Generate output for a specific minute
         '''
-        if metric == "moving_average":
-           
-            self.popleft_moving_window(minute)
-            result = Metrics.moving_average(self.moving_window)
-            event_result = EventResult(date=minute, average_delivery_time=result)
-            return event_result.format()
-        
-        ## Add other metrics
-        else:
-            raise ValueError(f"Unsuported metric: {metric}")
+                 
+        self.popleft_moving_window(minute)
+        result = self.metric.compute(self.moving_window)
+        event_result = EventResult(date=minute, delivery_time_op=result)
+        return event_result.format_moving_average() if metric == "moving_average" else event_result.format_maximum()
         
         
     def process(self, event: Event, metric: str) -> Optional[Union[Dict[str, Any], List[Dict[str, Any]]]]:
@@ -55,8 +58,8 @@ class Processor:
         if self.event_current_minute is None:
             self.event_current_minute = round_up_minute(event.timestamp)
             self.moving_window.append(event)
-            event_result = EventResult(date=self.event_current_minute-timedelta(minutes=1), average_delivery_time=0)
-            return event_result.format()
+            event_result = EventResult(date=self.event_current_minute-timedelta(minutes=1), delivery_time_op=0)
+            return event_result.format_moving_average() if metric == "moving_average" else event_result.format_maximum()
         
         # Get the minute of the current event
         event_minute = round_up_minute(event.timestamp)
