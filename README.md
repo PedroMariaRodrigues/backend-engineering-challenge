@@ -13,7 +13,7 @@ git clone https://github.com/PedroMariaRodrigues/backend-engineering-challenge.g
 cd backend-engineering-challenge
 ```
 
-Installation via setup.py
+Installation via [`setup.py`](setup.py)
 
 To install the application from source
 
@@ -72,14 +72,14 @@ unbabel_cli --input_file example.json --window_size 10 --keep_live
 
 # Project Structure
 - [`test.yml`](.github/workflows/test.yml): GitHub Actions workflow for CI/CD
-- [`unbabel_cli.py`](unbabel_cli.py): Entry point to the application
-- [`values.py`](values.py): Event data model and result formatting
-- [`metrics_.py`](metrics_.py): Metric calculation implementations
-- [`process.py`](process.py): Core processing logic for events
-- [`read.py`](read.py): Input handling and file monitoring
-- [`write.py`](write.py): Output handling (file or CLI)
-- [`example.json`](example.json): JSON file with example events
-- [`setup.py`](setup.py): Configuration file for packaging the application
+- [`unbabel_cli.py`](src/unbabel_cli.py): Entry point to the application
+- [`values.py`](src/values.py): Event data model and result formatting
+- [`metrics_.py`](src/metrics_.py): Metric calculation implementations
+- [`process.py`](src/process.py): Core processing logic for events
+- [`read.py`](src/read.py): Input handling and file monitoring
+- [`write.py`](src/write.py): Output handling (file or CLI)
+- [`example.json`](vexample.json): JSON file with example events
+- [`setup.py`](src/setup.py): Configuration file for packaging the application
 - `*_test.py`: Test files for each module
 
 # Event Format
