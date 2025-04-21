@@ -1,7 +1,3 @@
-available_metrics = {
-    "moving_average": MovingAverage,
-    "maximum": Maximum
-}
 class Metrics:
     '''
     Class with the available metrics
@@ -52,3 +48,8 @@ class Maximum(Metrics):
         
         max_value = max(delivery_time)
         return max_value
+    
+available_metrics = {
+    "moving_average": MovingAverage,
+    "maximum": Maximum
+}
