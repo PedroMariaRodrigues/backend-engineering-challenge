@@ -44,7 +44,10 @@ class Processor:
         '''
         Generate output for a specific minute
         '''
-                 
+        # Check if the metric is supported
+        if metric not in self.supported_metrics:
+            raise ValueError("Unsuported metric")    
+           
         self.popleft_moving_window(minute)
         result = self.metric.compute(self.moving_window)
         event_result = EventResult(date=minute, delivery_time_op=result)
@@ -55,9 +58,6 @@ class Processor:
         '''
         Process events and generate outputs for every minute
         '''
-        # Check if the metric is supported
-        if metric not in self.supported_metrics:
-            raise ValueError("Unsuported metric")
                 
         # Initialize the current minute if this is the first event
         if self.event_current_minute is None:
