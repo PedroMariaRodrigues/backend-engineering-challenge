@@ -19,6 +19,10 @@ from write import Writer
             json.dumps({"a": 10, "b": 20}) + "\n",
             False
         ),
+    ],
+    ids=[
+        "print_cli",
+        "print_file"
     ]
 )
 def test_writer_write(tmp_path, capsys, output_destiny, result, expected_output, is_cli):
@@ -59,6 +63,10 @@ def test_writer_write(tmp_path, capsys, output_destiny, result, expected_output,
             {"y": 2},
             [json.dumps({"x": 1}), json.dumps({"y": 2})]
         ),
+    ],
+    ids=[
+       "write_empty_file",
+       "append_to_file" 
     ]
 )
 def test_writer_append_behavior(tmp_path, initial_content, new_result, expected_lines):
