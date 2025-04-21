@@ -3,7 +3,7 @@ import sys
 import os
 import time
 from typing import Generator
-from event import Event
+from values import Event
 
 class Reader:
     '''
