@@ -41,10 +41,6 @@ def test_main_integration(monkeypatch):
 
         assert mock_writer.write.call_count == 3
 
-
-
-
-
 def test_main_writes_to_file(monkeypatch, tmp_path):
     """
     Test the main function to ensure it writes the output to a file correctly.
@@ -284,8 +280,6 @@ def test_main_keep_live_with_gap_filling(monkeypatch):
         # Total write calls should be 5
         assert mock_writer.write.call_count == 5
 
-
-
 def test_main_keyboard_interrupt(monkeypatch):
     """
     Test the main function to ensure it handles KeyboardInterrupt gracefully.
@@ -332,7 +326,6 @@ def test_main_keyboard_interrupt(monkeypatch):
         # Verify that the application exits gracefully
         assert excinfo.value.code == 0
         assert mock_writer.write.call_count == 3  # Two events + finalize
-
 
 def test_main_gap_filling(monkeypatch):
     """

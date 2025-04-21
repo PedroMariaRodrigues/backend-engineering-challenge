@@ -1,5 +1,4 @@
 import os
-import sys
 import time
 import json
 import pytest
@@ -135,7 +134,7 @@ def test_read_existing_events(tmp_path, lines, expected_count):
 
 def make_event_dict():
     return {
-        "timestamp": "2025-04-21T10:00:00Z",
+        "timestamp": "2025-04-21 10:00:00",
         "translation_id": "123",
         "source_language": "en",
         "target_language": "fr",
@@ -178,7 +177,6 @@ def test_read_existing_events_valid(tmp_path):
     # last_position set to file size
     assert reader.last_position == os.path.getsize(str(file))
 
-
 def test_read_existing_events_file_not_found():
     """
     Test file not found
@@ -202,7 +200,6 @@ def test_monitor_live_events_not_live():
     # 2) And it must be empty—next() raises StopIteration immediately
     with pytest.raises(StopIteration):
         next(gen)
-
 
 def test_monitor_live_events_live(tmp_path, monkeypatch):
     """

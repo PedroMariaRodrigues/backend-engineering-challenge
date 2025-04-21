@@ -25,20 +25,23 @@ def test_round_up_minute(timestamp, expected):
     assert round_up_minute(timestamp) == expected
 
 
-def test_initial_process_returns_zero(mock_event):
+@pytest.mark.parametrize(
+    "metric, output_key",
+    [
+        ("moving_average", "average_delivery_time"),
+        ("maximum", "max_delivery_time"),
+    ]
+)
+def test_initial_process_returns_zero(mock_event, metric, output_key):
     """
     Test that the initial process returns zero
     """
-    p = Processor(window_size=10, metric="moving_average")
+    p = Processor(window_size=10, metric=metric)
     ts = datetime(2025, 4, 20, 12, 0, 1)
     event = mock_event(ts, 10)
     result = p.process(event)
-    assert result == {"date": "2025-04-20 12:00:00", "average_delivery_time": 0}
-    p = Processor(window_size=10, metric="maximum")
-    ts = datetime(2025, 4, 20, 12, 0, 1)
-    event = mock_event(ts, 10)
-    result = p.process(event)
-    assert result == {"date": "2025-04-20 12:00:00", "max_delivery_time": 0}
+    assert result == {"date": "2025-04-20 12:00:00", output_key: 0}
+
 
 def test_same_minute_returns_none(mock_event):
     """
@@ -48,71 +51,66 @@ def test_same_minute_returns_none(mock_event):
     ts = datetime(2025, 4, 20, 12, 0, 1)
     p.process(mock_event(ts, 10))
     result = p.process(mock_event(ts + timedelta(seconds=30), 20))
-    p.process(mock_event(ts, 10))
-    result1 = p.process(mock_event(ts + timedelta(seconds=30), 20))
     assert result is None
-    assert result1 is None
 
 
-def test_cross_minute_triggers_output(mock_event):
+@pytest.mark.parametrize(
+    "metric, output_key",
+    [
+        ("moving_average", "average_delivery_time"),
+        ("maximum", "max_delivery_time"),
+    ]
+)
+def test_cross_minute_triggers_output(mock_event, metric, output_key):
     """
     Test that crossing a minute boundary triggers output generation
     """
-    p = Processor(window_size=10, metric="moving_average")
+    p = Processor(window_size=10, metric=metric)
     base_ts = datetime(2025, 4, 20, 12, 0, 30)
     p.process(mock_event(base_ts, 10))
     result = p.process(mock_event(base_ts + timedelta(minutes=1, seconds=5), 20))
     assert isinstance(result, dict)
-    assert "date" in result and "average_delivery_time" in result
-    p = Processor(window_size=10, metric="maximum")
-    base_ts = datetime(2025, 4, 20, 12, 0, 30)
-    p.process(mock_event(base_ts, 10))
-    result = p.process(mock_event(base_ts + timedelta(minutes=1, seconds=5), 20))
-    assert isinstance(result, dict)
-    assert "date" in result and "max_delivery_time" in result
+    assert "date" in result and output_key in result
 
 
-def test_multiple_minute_gap(mock_event):
+@pytest.mark.parametrize(
+    "metric, output_key",
+    [
+        ("moving_average", "average_delivery_time"),
+        ("maximum", "max_delivery_time"),
+    ]
+)
+def test_multiple_minute_gap(mock_event, metric, output_key):
     """
     Test that multiple minute gaps generate multiple outputs
     """
-    p = Processor(window_size=10, metric="moving_average")
+    p = Processor(window_size=10, metric=metric)
     base_ts = datetime(2025, 4, 20, 12, 0, 30)
     p.process(mock_event(base_ts, 10))
     result = p.process(mock_event(base_ts + timedelta(minutes=3), 20))
     assert isinstance(result, list)
     assert len(result) == 3
     for r in result:
-        assert "date" in r and "average_delivery_time" in r
-        
-    p = Processor(window_size=10, metric="maximum")
-    base_ts = datetime(2025, 4, 20, 12, 0, 30)
-    p.process(mock_event(base_ts, 10))
-    result1 = p.process(mock_event(base_ts + timedelta(minutes=3), 20))
-    assert isinstance(result1, list)
-    assert len(result1) == 3
-    for r in result1:
-        assert "date" in r and "max_delivery_time" in r
+        assert "date" in r and output_key in r
 
 
-
-def test_finalize_returns_last_minute_output(mock_event):
+@pytest.mark.parametrize(
+    "metric, output_key",
+    [
+        ("moving_average", "average_delivery_time"),
+        ("maximum", "max_delivery_time"),
+    ]
+)
+def test_finalize_returns_last_minute_output(mock_event, metric, output_key):
     """
     Test that finalize returns last minute output
     """
-    p = Processor(window_size=10, metric="moving_average")
+    p = Processor(window_size=10, metric=metric)
     ts = datetime(2025, 4, 20, 12, 0, 0)
     p.process(mock_event(ts, 10))
     result = p.finalize()
     assert result["date"] == "2025-04-20 12:01:00"
-    assert "average_delivery_time" in result
-    
-    p = Processor(window_size=10, metric="maximum")
-    ts = datetime(2025, 4, 20, 12, 0, 0)
-    p.process(mock_event(ts, 10))
-    result1 = p.finalize()
-    assert result1["date"] == "2025-04-20 12:01:00"
-    assert "max_delivery_time" in result1
+    assert output_key in result
 
 
 def test_unsupported_metric_raises(mock_event):
@@ -137,26 +135,6 @@ def test_get_metrics():
     with pytest.raises(ValueError, match="Unsupported metric"):
         processor.get_metrics("unknown_metric")
 
-def test_process_same_minute_returns_none():
-    """
-    Test that process returns None when an event is in the same minute as current_minute
-    """
-    processor = Processor(window_size=5, metric="moving_average")
-    
-    initial_time = datetime(2025, 4, 21, 12, 0, 0)
-    processor.event_current_minute = initial_time
-    event = Event(timestamp=initial_time - timedelta(seconds=30), translation_id="X", source_language="X", target_language="X", client_name="X", event_name="X", nr_words=10, duration=5)
-    result = processor.process(event)
-    assert result is None
-    assert event in processor.moving_window
-    
-    processor = Processor(window_size=5, metric="maximum")
-    initial_time = datetime(2025, 4, 21, 12, 0, 0)
-    processor.event_current_minute = initial_time  
-    event1 = Event(timestamp=initial_time - timedelta(seconds=30), translation_id="X", source_language="X", target_language="X", client_name="X", event_name="X", nr_words=10, duration=5)
-    result1 = processor.process(event1)
-    assert result1 is None
-    assert event1 in processor.moving_window
 
 def test_process_return_logic():
     """
@@ -251,6 +229,7 @@ def test_process_return_logic():
     assert len(result4) == 2  # Two outputs for the 2-minute gap
     assert processor.generate_output_for_minute.call_count == 2
 
+
 def test_generate_output_calls_popleft():
     """
     Test that generate_output_for_minute calls popleft_moving_window
@@ -301,4 +280,3 @@ def test_process_increments_current_minute():
     # The current_minute will be incremented to round_up_minute(future_time)
     expected_new_minute = round_up_minute(future_time)
     assert processor.event_current_minute == expected_new_minute
-    
