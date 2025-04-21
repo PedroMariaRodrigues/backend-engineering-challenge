@@ -193,7 +193,7 @@ make test-coverage
 This generates:
 
 - Terminal report with line-by-line coverage metrics
-- LCOV report at lcov.info for integration with tools like Codecov
+- LCOV report at lcov.info
 
 Current code coverage is close to 100% across all modules, ensuring reliability and stability.
 
