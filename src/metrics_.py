@@ -1,4 +1,7 @@
-
+available_metrics = {
+    "moving_average": MovingAverage,
+    "maximum": Maximum
+}
 class Metrics:
     '''
     Class with the available metrics
@@ -6,7 +9,7 @@ class Metrics:
     def compute() -> int:
         pass
     
-    
+
 class MovingAverage(Metrics):
     '''
     Calculates the moving average of the events
