@@ -6,7 +6,7 @@ setup(
     description="Event processing pipeline with configurable metrics",
     author="Pedro Rodrigues",
     author_email="pedro.maria.rodrigues@tecnico.ulisboa.pt",
-    py_modules=["unbabel_cli", "event", "process", "read", "write", "metrics_"],
+    py_modules=["unbabel_cli", "values", "process", "read", "write", "metrics_"],
     package_dir={"": "src"}, 
     install_requires=[],  # Move the to requirements.txt
     entry_points={
