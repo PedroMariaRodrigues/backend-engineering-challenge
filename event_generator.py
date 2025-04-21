@@ -4,7 +4,7 @@ import time
 import json
 import argparse
     
-def event_generator(filename, max_delay):
+def event_generator(filename: str, max_delay: int) -> None:
     '''
     Generates random events and saves them to a file
     '''
