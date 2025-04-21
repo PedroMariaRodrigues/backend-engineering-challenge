@@ -31,4 +31,4 @@ class EventResult(BaseModel):
         """
         Format the event result maximum to a string
         """
-        return {"date": str(self.date), "maximum": self.delivery_time_op}
+        return {"date": str(self.date), "max_delivery_time": self.delivery_time_op}
