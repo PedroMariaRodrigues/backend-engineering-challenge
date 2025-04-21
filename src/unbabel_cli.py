@@ -15,9 +15,10 @@ def main():
                         help="Input file to process")
     parser.add_argument("--window_size", type=int, required=True, 
                         help='Window size to process data in minutes')
-    parser.add_argument("--metric", type=str, default="moving_average", choices=["moving_average"], 
+    parser.add_argument("--metric", type=str, default="moving_average", choices=["moving_average", "maximum"], 
                         help="""Available metrics:\n
-                        - moving_average(default) -> Moving average of the last x minutes\n""")
+                        - moving_average(default) -> Moving average of the last x minutes\n
+                        - maximum -> Maximum of the last x minutes""")
     parser.add_argument("--output", type=str, default="output.json",
                         help = """The results can be outputed to:
                         -file (default) -> Add the destiny desired file and format, example: output.txt, output.json (Accept txt and json formats only)
