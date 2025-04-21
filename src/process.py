@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Union, Optional, Any, Deque
 from collections import deque
 from values import Event, EventResult
+from metrics_ import available_metrics
 
 
 def round_up_minute(dt: datetime) -> datetime:
@@ -22,6 +23,7 @@ class Processor:
         self.moving_window: Deque[Event] = deque()
         self.event_current_minute: Optional[datetime] = None
         self.metric: Metrics = self.get_metrics(metric)
+        self.supported_metrics = available_metrics.keys()
         
     def get_metrics(self, metric: str) -> Metrics:
         if metric == "moving_average":
@@ -53,6 +55,9 @@ class Processor:
         '''
         Process events and generate outputs for every minute
         '''
+        # Check if the metric is supported
+        if metric not in self.supported_metrics:
+            raise ValueError("Unsuported metric")
                 
         # Initialize the current minute if this is the first event
         if self.event_current_minute is None:
