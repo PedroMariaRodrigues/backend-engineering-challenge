@@ -71,14 +71,15 @@ unbabel_cli --input_file example.json --window_size 10 --keep_live
 ```
 
 # Project Structure
-- `unbabel_cli.py`: Entry point to the application
-- `event.py`: Event data model and result formatting
-- `metrics_.py`: Metric calculation implementations
-- `process.py`: Core processing logic for events
-- `read.py`: Input handling and file monitoring
-- `write.py`: Output Handling(file or CLI)
-- `example.json`: JSON file with example of events
-- `setup.py`: Configuration file for packaging the application. 
+- [`test.yml`](.github/workflows/test.yml): GitHub Actions workflow for CI/CD
+- [`unbabel_cli.py`](unbabel_cli.py): Entry point to the application
+- [`values.py`](values.py): Event data model and result formatting
+- [`metrics_.py`](metrics_.py): Metric calculation implementations
+- [`process.py`](process.py): Core processing logic for events
+- [`read.py`](read.py): Input handling and file monitoring
+- [`write.py`](write.py): Output handling (file or CLI)
+- [`example.json`](example.json): JSON file with example events
+- [`setup.py`](setup.py): Configuration file for packaging the application
 - `*_test.py`: Test files for each module
 
 # Event Format
@@ -130,9 +131,7 @@ pip install -r requirements.txt
 pytest
 ```    
 
-
 ## In Docker:
-
 
 Using Make:
 ```shell
@@ -145,7 +144,6 @@ For tests with coverage report:
 ```shell
 make test-coverage
 ```
-
 
 # Error Handling Examples
 The application handles various error cases:
@@ -175,7 +173,7 @@ Error decoding JSON: { "timestamp": "2025-04-20T12:00:00Z", "duration": }
 ```
 
 # CI Workflow
-The project uses GitHub Actions for continuous integration. The workflow in (.github\workflows\test.yml) automatically:
+The project uses GitHub Actions for continuous integration. The workflow in [`test.yml`](.github/workflows/test.yml) automatically:
 
 1. Sets up Python 3.11
 2. Installs dependencies using `make install-requirements`
@@ -201,6 +199,8 @@ This generates:
 
 Current code coverage is close to 100% across all modules, ensuring reliability and stability.
 
+![alt text](images/tests_coverage.png)
+
 
 # Extra Features
 
@@ -225,4 +225,10 @@ python event_generator.py --output_file events.json --max_delay 10
 ### Parameters
 
 - `--output_file`: Path to the output file (the input file used for unbabel_cli)
-- `--max_delay`: Maximum delay between random generated timestamp events
+- `--max_delay`(Optional):  Maximum delay between random generated timestamp events
+
+# For Production Use:
+The following features are necessary for production use but have not been implemented yet:
+
+- Logging for observability to monitor application behavior and diagnose issues.
+- Code structure improvements to organize the application into modular pages.
