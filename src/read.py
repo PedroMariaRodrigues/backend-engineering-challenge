@@ -2,7 +2,7 @@ import json
 import sys
 import os
 import time
-from typing import Generator
+from typing import Generator, Optional
 from values import Event
 
 class Reader:
@@ -10,7 +10,7 @@ class Reader:
     Class to read the events from the file
     '''
     
-    def __init__(self, filename: str, keep_reading_live: bool) -> None:
+    def __init__(self, filename: str, keep_reading_live: bool = False) -> None:
         self.filename = filename  
         self.keep_reading_live = keep_reading_live  
         self.last_position = 0  
@@ -56,10 +56,8 @@ class Reader:
                     try:
                         event = self.parse_event(line)
                         yield event
-                    except json.JSONDecodeError:
+                    except (json.JSONDecodeError, ValueError, KeyError):
                         print(f"Error decoding JSON: {line}")
-                    except KeyError as e:
-                        print(f"Missing required key in event: {e}")
             
             # Store the current file position for live monitoring
             if self.keep_reading_live:
@@ -69,12 +67,12 @@ class Reader:
             print(f"File not found: {self.filename}")
             sys.exit(1)
     
-    def monitor_live_events(self) -> Generator[Event, None, None]:
+    def monitor_live_events(self) -> Optional[Generator[Event, None, None]]:
         """
         Monitor the file for new events after reading existing ones.
         """
-        if not self.keep_reading_live:
-            return
+        if not self.keep_reading_live: 
+            return None
 
         try:
             while True:
@@ -93,12 +91,10 @@ class Reader:
                                 # Update position before yielding
                                 self.last_position = file.tell()
                                 yield event
-                            except json.JSONDecodeError:
+                            except (json.JSONDecodeError, ValueError, KeyError):
                                 print(f"Error decoding JSON: {line}")
                                 self.last_position = file.tell()  # Skip bad JSON
-                            except KeyError as e:
-                                print(f"Missing required key in event: {e}")
-                                self.last_position = file.tell()  # Skip bad event
+                                
                         else:
                             # No new line, pause before retrying
                             time.sleep(0.5)
