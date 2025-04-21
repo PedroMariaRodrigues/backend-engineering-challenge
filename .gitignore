@@ -60,6 +60,7 @@ ipython_config.py
 .env
 .env.*
 .spam
+.venv
 
 # Project specifics
 unbabel_cli.egg-info
