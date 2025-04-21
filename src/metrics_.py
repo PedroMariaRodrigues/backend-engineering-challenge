@@ -1,5 +1,5 @@
 
-class metrics:
+class Metrics:
     '''
     Class with the available metrics
     '''
