@@ -28,7 +28,7 @@ def test_moving_average(events, expected_ma):
     """
     Test moving_average with various lists of events.
     """
-    ma = MovingAverage
+    ma = MovingAverage()
     result = ma.compute(events)
     assert result == expected_ma
     
